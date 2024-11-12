@@ -40,9 +40,11 @@ class AppEncuestas(tk.Tk):
     def agregar_encuesta(self):
         try:
             data = [entry.get() for entry in self.entries]
+            print(f"Adding survey with data: {data}")  # Debug print
             agregar_encuesta(*data)
             messagebox.showinfo("Éxito", "Encuesta añadida correctamente.")
         except Exception as e:
+            print(f"Error al agregar encuesta: {e}")  # Debug print
             messagebox.showerror("Error", f"Error al agregar encuesta: {e}")
 
     def ver_encuestas(self):
@@ -54,6 +56,7 @@ class AppEncuestas(tk.Tk):
             for row in rows:
                 self.tree.insert("", "end", values=row)
         except Exception as e:
+            print(f"Error al obtener encuestas: {e}")  # Debug print
             messagebox.showerror("Error", f"Error al obtener encuestas: {e}")
 
     def actualizar_encuesta(self):
@@ -61,17 +64,25 @@ class AppEncuestas(tk.Tk):
             selected_item = self.tree.selection()[0]
             data = [entry.get() for entry in self.entries]
             data.append(self.tree.item(selected_item)['values'][0])  # Add idEncuesta to the data
+            print(f"Updating survey with data: {data}")  # Debug print
             actualizar_encuesta(*data)
             messagebox.showinfo("Éxito", "Encuesta actualizada correctamente.")
         except Exception as e:
+            print(f"Error al actualizar encuesta: {e}")  # Debug print
             messagebox.showerror("Error", f"Error al actualizar encuesta: {e}")
 
     def eliminar_encuesta(self):
         try:
             selected_item = self.tree.selection()[0]
             id_encuesta = self.tree.item(selected_item)['values'][0]
+            print(f"Deleting survey with id: {id_encuesta}")  # Debug print
             eliminar_encuesta(id_encuesta)
             self.tree.delete(selected_item)
             messagebox.showinfo("Éxito", "Encuesta eliminada correctamente.")
         except Exception as e:
+            print(f"Error al eliminar encuesta: {e}")  # Debug print
             messagebox.showerror("Error", f"Error al eliminar encuesta: {e}")
+
+if __name__ == "__main__":
+    app = AppEncuestas()
+    app.mainloop()
