@@ -2,33 +2,32 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 from .crud_operations import agregar_encuesta, obtener_encuestas, actualizar_encuesta, eliminar_encuesta
 from .exportar_a_excel import exportar_a_excel
+from Styles.styles import apply_styles
 
 class AppEncuestas(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Gestión de Encuestas")
-        self.geometry("1400x800")  # Adjusted window size to fit the table
+        self.geometry("1400x800")
+        self.configure(bg="lightblue")
 
         # Apply styles
-        self.style = ttk.Style(self)
-        self.style.configure("Treeview.Heading", font=("Helvetica", 10, "bold"), foreground="blue")
-        self.style.configure("Treeview", font=("Helvetica", 10), rowheight=25)
-        self.configure(bg="lightblue")
+        apply_styles(self)
 
         # Campos de entrada para la encuesta
         self.create_input_fields()
 
         # Botones de acciones
-        button_frame = tk.Frame(self, bg="lightblue")
+        button_frame = ttk.Frame(self)
         button_frame.grid(row=12, column=0, columnspan=2, pady=10)
-        tk.Button(button_frame, text="Agregar Encuesta", command=self.agregar_encuesta, bg="green", fg="white").pack(side=tk.LEFT, padx=5)
-        tk.Button(button_frame, text="Ver Encuestas", command=self.ver_encuestas, bg="blue", fg="white").pack(side=tk.LEFT, padx=5)
-        tk.Button(button_frame, text="Actualizar Encuesta", command=self.actualizar_encuesta, bg="orange", fg="white").pack(side=tk.LEFT, padx=5)
-        tk.Button(button_frame, text="Eliminar Encuesta", command=self.eliminar_encuesta, bg="red", fg="white").pack(side=tk.LEFT, padx=5)
-        tk.Button(button_frame, text="Exportar a Excel", command=self.exportar_a_excel, bg="purple", fg="white").pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_frame, text="Agregar Encuesta", command=self.agregar_encuesta, style="TButton").grid(row=0, column=0, padx=5)
+        ttk.Button(button_frame, text="Ver Encuestas", command=self.ver_encuestas, style="TButton").grid(row=0, column=1, padx=5)
+        ttk.Button(button_frame, text="Actualizar Encuesta", command=self.actualizar_encuesta, style="TButton").grid(row=0, column=2, padx=5)
+        ttk.Button(button_frame, text="Eliminar Encuesta", command=self.eliminar_encuesta, style="TButton").grid(row=0, column=3, padx=5)
+        ttk.Button(button_frame, text="Exportar a Excel", command=self.exportar_a_excel, style="TButton").grid(row=0, column=4, padx=5)
 
         # Frame for the table
-        frame = tk.Frame(self, bg="lightblue")
+        frame = ttk.Frame(self)
         frame.grid(row=13, column=0, columnspan=2, sticky='nsew', padx=20)
 
         # Tabla para mostrar los registros
@@ -49,7 +48,7 @@ class AppEncuestas(tk.Tk):
             self.tree.heading(col, text=col)
             self.tree.column(col, width=width, anchor=tk.CENTER)
 
-        self.tree.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.tree.grid(row=0, column=0, sticky='nsew')
 
         # Bind the select event
         self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
@@ -62,20 +61,20 @@ class AppEncuestas(tk.Tk):
                   "Bebidas Destiladas por Semana", "Vinos por Semana", "Pérdidas de Control",
                   "Diversión Dependencia Alcohol", "Problemas Digestivos", "Tensión Alta", "Dolor de Cabeza"]
         self.entries = []
-        input_frame = tk.Frame(self, bg="lightblue")
+        input_frame = ttk.Frame(self)
         input_frame.grid(row=0, column=0, columnspan=2, pady=10)
         for i, label in enumerate(labels):
-            tk.Label(input_frame, text=f"{label}:", bg="lightblue", font=("Helvetica", 10, "bold")).grid(row=i, column=0, padx=10, pady=5, sticky=tk.E)
+            ttk.Label(input_frame, text=f"{label}:").grid(row=i, column=0, padx=10, pady=5, sticky=tk.E)
             if label == "Sexo":
                 entry = ttk.Combobox(input_frame, values=["Hombre", "Mujer"])
             elif label in ["Diversión Dependencia Alcohol", "Problemas Digestivos"]:
                 entry = ttk.Combobox(input_frame, values=["Sí", "No"])
             elif label == "Dolor de Cabeza":
-                entry = ttk.Combobox(input_frame, values=["Siempre", "Alguna vez", "Nunca"])
+                entry = ttk.Combobox(input_frame, values=["Alguna vez", "Muy a menudo", "Nunca"])
             elif label == "Tensión Alta":
-                entry = ttk.Combobox(input_frame, values=["Normal", "Media", "Alta"])
+                entry = ttk.Combobox(input_frame, values=["No lo se", "Sí", "No"])
             else:
-                entry = tk.Entry(input_frame)
+                entry = ttk.Entry(input_frame)
             entry.grid(row=i, column=1, padx=10, pady=5)
             self.entries.append(entry)
 
