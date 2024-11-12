@@ -3,7 +3,7 @@ CREATE DATABASE ENCUESTAS;
 USE ENCUESTAS;
 
 CREATE TABLE ENCUESTA (
-	idEncuesta int primary key,
+	idEncuesta int auto_increment primary key,
     edad int,
     Sexo varchar(7),
 	BebidasSemana int,
