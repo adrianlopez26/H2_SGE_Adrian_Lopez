@@ -1,22 +1,21 @@
-import mysql.connector
-from mysql.connector import Error
+import pymysql
+from pymysql.err import OperationalError
 
 def conectar():
     try:
-        conexion = mysql.connector.connect(
+        conexion = pymysql.connect(
             host='localhost',
             user='root',
             password='curso',
-            database='ENCUESTAS'
+            database='encuestas'
         )
-        if conexion.is_connected():
-            print("Conexión exitosa a la base de datos")
+        print("Conexión exitosa a la base de datos")
         return conexion
-    except Error as e:
+    except OperationalError as e:
         print(f"Error al conectar a la base de datos: {e}")
         return None
 
 def cerrar_conexion(conexion):
-    if conexion.is_connected():
+    if conexion:
         conexion.close()
         print("Conexión cerrada")
