@@ -1,3 +1,4 @@
+# interfaz.py
 import tkinter as tk
 from tkinter import ttk, messagebox
 from .crud_operations import agregar_encuesta, obtener_encuestas, actualizar_encuesta, eliminar_encuesta
@@ -12,7 +13,7 @@ class AppEncuestas(tk.Tk):
         self.configure(bg="lightblue")
 
         # Apply styles
-        apply_styles(self)
+        CustomButton = apply_styles(self)
 
         # Campos de entrada para la encuesta
         self.create_input_fields()
@@ -20,11 +21,11 @@ class AppEncuestas(tk.Tk):
         # Botones de acciones
         button_frame = ttk.Frame(self)
         button_frame.grid(row=12, column=0, columnspan=2, pady=10)
-        ttk.Button(button_frame, text="Agregar Encuesta", command=self.agregar_encuesta, style="TButton").grid(row=0, column=0, padx=5)
-        ttk.Button(button_frame, text="Ver Encuestas", command=self.ver_encuestas, style="TButton").grid(row=0, column=1, padx=5)
-        ttk.Button(button_frame, text="Actualizar Encuesta", command=self.actualizar_encuesta, style="TButton").grid(row=0, column=2, padx=5)
-        ttk.Button(button_frame, text="Eliminar Encuesta", command=self.eliminar_encuesta, style="TButton").grid(row=0, column=3, padx=5)
-        ttk.Button(button_frame, text="Exportar a Excel", command=self.exportar_a_excel, style="TButton").grid(row=0, column=4, padx=5)
+        CustomButton(button_frame, text="Agregar Encuesta", command=self.agregar_encuesta).grid(row=0, column=0, padx=5)
+        CustomButton(button_frame, text="Ver Encuestas", command=self.ver_encuestas).grid(row=0, column=1, padx=5)
+        CustomButton(button_frame, text="Actualizar Encuesta", command=self.actualizar_encuesta).grid(row=0, column=2, padx=5)
+        CustomButton(button_frame, text="Eliminar Encuesta", command=self.eliminar_encuesta).grid(row=0, column=3, padx=5)
+        CustomButton(button_frame, text="Exportar a Excel", command=self.exportar_a_excel).grid(row=0, column=4, padx=5)
 
         # Frame for the table
         frame = ttk.Frame(self)
