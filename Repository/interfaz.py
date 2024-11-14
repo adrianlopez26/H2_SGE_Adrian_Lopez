@@ -9,17 +9,24 @@ class AppEncuestas(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Gestión de Encuestas")
-        self.geometry("1400x800")
+        self.geometry("1600x900")
         self.configure(bg="lightblue")
 
         # Apply styles
         CustomButton = apply_styles(self)
 
+        # Create a main frame to center the content
+        main_frame = ttk.Frame(self, style="TFrame", )
+        main_frame.pack(expand=True, fill=tk.BOTH)
+
+        # Center the main frame
+        main_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
+
         # Campos de entrada para la encuesta
-        self.create_input_fields()
+        self.create_input_fields(main_frame)
 
         # Botones de acciones
-        button_frame = ttk.Frame(self)
+        button_frame = ttk.Frame(main_frame)
         button_frame.grid(row=12, column=0, columnspan=2, pady=10)
         CustomButton(button_frame, text="Agregar Encuesta", command=self.agregar_encuesta).grid(row=0, column=0, padx=5)
         CustomButton(button_frame, text="Ver Encuestas", command=self.ver_encuestas).grid(row=0, column=1, padx=5)
@@ -28,7 +35,7 @@ class AppEncuestas(tk.Tk):
         CustomButton(button_frame, text="Exportar a Excel", command=self.exportar_a_excel).grid(row=0, column=4, padx=5)
 
         # Frame for the table
-        frame = ttk.Frame(self)
+        frame = ttk.Frame(main_frame)
         frame.grid(row=13, column=0, columnspan=2, sticky='nsew', padx=20)
 
         # Tabla para mostrar los registros
@@ -57,12 +64,12 @@ class AppEncuestas(tk.Tk):
         # Fetch and display data on startup
         self.ver_encuestas()
 
-    def create_input_fields(self):
+    def create_input_fields(self, parent):
         labels = ["Edad", "Sexo", "Bebidas por Semana", "Cervezas por Semana", "Bebidas de Fin de Semana",
                   "Bebidas Destiladas por Semana", "Vinos por Semana", "Pérdidas de Control",
                   "Diversión Dependencia Alcohol", "Problemas Digestivos", "Tensión Alta", "Dolor de Cabeza"]
         self.entries = []
-        input_frame = ttk.Frame(self)
+        input_frame = ttk.Frame(parent)
         input_frame.grid(row=0, column=0, columnspan=2, pady=10)
         for i, label in enumerate(labels):
             ttk.Label(input_frame, text=f"{label}:").grid(row=i, column=0, padx=10, pady=5, sticky=tk.E)
