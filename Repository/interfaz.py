@@ -74,17 +74,42 @@ class AppEncuestas(tk.Tk):
         for i, label in enumerate(labels):
             ttk.Label(input_frame, text=f"{label}:").grid(row=i, column=0, padx=10, pady=5, sticky=tk.E)
             if label == "Sexo":
-                entry = ttk.Combobox(input_frame, values=["Hombre", "Mujer"])
+                entry = ttk.Combobox(input_frame, values=["Hombre", "Mujer"], state="readonly", width=20)
             elif label in ["Diversión Dependencia Alcohol", "Problemas Digestivos"]:
-                entry = ttk.Combobox(input_frame, values=["Sí", "No"])
+                entry = ttk.Combobox(input_frame, values=["Sí", "No"], state="readonly", width=20)
             elif label == "Dolor de Cabeza":
-                entry = ttk.Combobox(input_frame, values=["Alguna vez", "Muy a menudo", "Nunca"])
+                entry = ttk.Combobox(input_frame, values=["Alguna vez", "Muy a menudo", "Nunca"], state="readonly",
+                                     width=20)
             elif label == "Tensión Alta":
-                entry = ttk.Combobox(input_frame, values=["No lo se", "Sí", "No"])
+                entry = ttk.Combobox(input_frame, values=["No lo se", "Sí", "No"], state="readonly", width=20)
             else:
-                entry = ttk.Entry(input_frame)
+                entry = ttk.Entry(input_frame, width=23)
             entry.grid(row=i, column=1, padx=10, pady=5)
             self.entries.append(entry)
+
+        # Añadir campos de filtro a la derecha de la tabla
+        filter_frame = ttk.Frame(parent)
+        filter_frame.grid(row=13, column=2, padx=10, pady=10, sticky='n')
+
+        ttk.Label(filter_frame, text="Edad:").grid(row=0, column=0, padx=5, pady=2, sticky=tk.W)
+        self.age_filter = ttk.Entry(filter_frame, width=10)
+        self.age_filter.grid(row=0, column=1, padx=5, pady=2)
+
+        ttk.Label(filter_frame, text="Sexo:").grid(row=1, column=0, padx=5, pady=2, sticky=tk.W)
+        self.sex_filter = ttk.Combobox(filter_frame, values=["", "Hombre", "Mujer"], state="readonly", width=10)
+        self.sex_filter.grid(row=1, column=1, padx=5, pady=2)
+
+        # Añadir botones de filtro
+        filter_button = ttk.Button(filter_frame, text="Aplicar", command=self.ver_encuestas)
+        filter_button.grid(row=2, column=0, columnspan=2, pady=5)
+
+        clear_filter_button = ttk.Button(filter_frame, text="Eliminar", command=self.clear_filters)
+        clear_filter_button.grid(row=3, column=0, columnspan=2, pady=5)
+
+    def clear_filters(self):
+        self.age_filter.delete(0, tk.END)
+        self.sex_filter.set("")
+        self.ver_encuestas()
 
     def on_tree_select(self, event):
         selected_items = self.tree.selection()
@@ -109,9 +134,24 @@ class AppEncuestas(tk.Tk):
 
     def ver_encuestas(self):
         try:
+            # Get filter values
+            age_filter = self.age_filter.get()
+            sex_filter = self.sex_filter.get()
+
+            # Fetch all rows
             rows = obtener_encuestas()
+
+            # Apply filters
+            if age_filter:
+                rows = [row for row in rows if str(row[1]) == age_filter]  # Assuming age is the second column
+            if sex_filter:
+                rows = [row for row in rows if row[2] == sex_filter]  # Assuming sex is the third column
+
+            # Clear the table
             for row in self.tree.get_children():
                 self.tree.delete(row)
+
+            # Insert filtered rows
             for row in rows:
                 self.tree.insert("", "end", values=row)
         except Exception as e:

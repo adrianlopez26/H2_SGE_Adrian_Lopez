@@ -20,11 +20,11 @@ def apply_styles(root):
     style = ttk.Style(root)
     style.theme_use("clam")
 
-    style.configure("TLabel", font=("Helvetica", 12), background="#ffffff", foreground="#333333")
-    style.configure("TFrame", background="lightblue")  # Set the background color for TFrame
+    style.configure("TLabel", font=("Helvetica", 12), background="lightblue", foreground="#333333")
+    style.configure("TFrame", background="lightblue")
     style.configure("Treeview.Heading", font=("Helvetica", 12, "bold"), foreground="#ffffff", background="#333333")
     style.configure("Treeview", font=("Helvetica", 12), rowheight=25, fieldbackground="#f9f9f9", background="#f9f9f9")
     style.configure("TEntry", font=("Helvetica", 12), padding=5, relief="flat", background="#f0f0f0", foreground="#333333")
-    style.configure("TCombobox", font=("Helvetica", 12), padding=5, relief="flat", background="#lightblue", foreground="#333333")
+    style.configure("TCombobox", font=("Helvetica", 12), padding=5, relief="flat", background="#f0f0f0", foreground="#333333", arrowcolor="#333333")
 
     return CustomButton
