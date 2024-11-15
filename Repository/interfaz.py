@@ -1,9 +1,10 @@
-# interfaz.py
 import tkinter as tk
 from tkinter import ttk, messagebox
 from .crud_operations import agregar_encuesta, obtener_encuestas, actualizar_encuesta, eliminar_encuesta
 from .exportar_a_excel import exportar_a_excel
 from Styles.styles import apply_styles
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class AppEncuestas(tk.Tk):
     def __init__(self):
@@ -16,7 +17,7 @@ class AppEncuestas(tk.Tk):
         CustomButton = apply_styles(self)
 
         # Create a main frame to center the content
-        main_frame = ttk.Frame(self, style="TFrame", )
+        main_frame = ttk.Frame(self, style="TFrame")
         main_frame.pack(expand=True, fill=tk.BOTH)
 
         # Center the main frame
@@ -33,6 +34,7 @@ class AppEncuestas(tk.Tk):
         CustomButton(button_frame, text="Actualizar Encuesta", command=self.actualizar_encuesta).grid(row=0, column=2, padx=5)
         CustomButton(button_frame, text="Eliminar Encuesta", command=self.eliminar_encuesta).grid(row=0, column=3, padx=5)
         CustomButton(button_frame, text="Exportar a Excel", command=self.exportar_a_excel).grid(row=0, column=4, padx=5)
+        CustomButton(button_frame, text="Generar Gráfico", command=self.generar_grafico).grid(row=0, column=5, padx=5)
 
         # Frame for the table
         frame = ttk.Frame(main_frame)
@@ -171,20 +173,92 @@ class AppEncuestas(tk.Tk):
     def eliminar_encuesta(self):
         try:
             selected_item = self.tree.selection()[0]
-            id_encuesta = self.tree.item(selected_item)['values'][0]
-            eliminar_encuesta(id_encuesta)
-            self.tree.delete(selected_item)
-            messagebox.showinfo("Éxito", "Encuesta eliminada correctamente.")
-            self.ver_encuestas()  # Refresh the table
+            values = self.tree.item(selected_item)['values']
+            id_encuesta = values[0]
+
+            # Ask for confirmation
+            confirm = messagebox.askyesno("Confirmar eliminación",
+                                            f"¿Está seguro de que desea eliminar la encuesta con ID {id_encuesta}?")
+
+            if confirm:
+                eliminar_encuesta(id_encuesta)
+                self.tree.delete(selected_item)
+                messagebox.showinfo("Éxito", "Encuesta eliminada correctamente.")
+                self.ver_encuestas()  # Refresh the table
+
+                # Show deleted survey details in a new window
+                details_window = tk.Toplevel(self)
+                details_window.title("Detalles de la Encuesta Eliminada")
+                details_window.geometry("400x300")
+
+                details_text = "\n".join([f"{col}: {val}" for col, val in zip(self.tree['columns'], values)])
+                tk.Label(details_window, text=details_text, justify=tk.LEFT, padx=10, pady=10).pack()
+
         except Exception as e:
             messagebox.showerror("Error", f"Error al eliminar encuesta: {e}")
 
     def exportar_a_excel(self):
         try:
-            exportar_a_excel()
-            messagebox.showinfo("Éxito", "Datos exportados a encuestas.xlsx correctamente.")
+            # Get data from the table
+            data = [self.tree.item(item)['values'] for item in self.tree.get_children()]
+
+            if not data:
+                messagebox.showinfo("Información", "No hay datos para exportar.")
+                return
+
+            # Call the export function
+            exportar_a_excel(data)
         except Exception as e:
             messagebox.showerror("Error", f"Error al exportar datos: {e}")
+
+    import tkinter as tk
+    from tkinter import ttk, messagebox
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
+    def generar_grafico(self):
+        try:
+            # Get filtered data from the table
+            data = [self.tree.item(item)['values'] for item in self.tree.get_children()]
+
+            if not data:
+                messagebox.showinfo("Información", "No hay datos para generar el gráfico.")
+                return
+
+            # Extract relevant columns for the graph
+            edades = [row[1] for row in data]  # Assuming age is the second column
+            sexos = [row[2] for row in data]  # Assuming sex is the third column
+
+            # Create a new window
+            new_window = tk.Toplevel(self)
+            new_window.title("Gráfico de Encuestas")
+            new_window.geometry("800x600")
+
+            # Create a figure and axis
+            fig, ax = plt.subplots()
+
+            # Plot data
+            hombres = [edad for edad, sexo in zip(edades, sexos) if sexo == 'Hombre']
+            mujeres = [edad for edad, sexo in zip(edades, sexos) if sexo == 'Mujer']
+
+            if hombres or mujeres:
+                ax.hist([hombres, mujeres], bins=range(min(edades), max(edades) + 1), alpha=0.7,
+                        label=['Hombres', 'Mujeres'], color=['blue', 'pink'])
+                ax.set_xlabel('Edad')
+                ax.set_ylabel('Frecuencia')
+                ax.set_title('Distribución de Edades por Sexo')
+                ax.legend()
+            else:
+                messagebox.showinfo("Información", "No hay datos suficientes para generar el gráfico.")
+                return
+
+            # Embed the plot in the new window
+            canvas = FigureCanvasTkAgg(fig, master=new_window)
+            canvas.draw()
+            canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Error al generar gráfico: {e}")
 
 if __name__ == "__main__":
     app = AppEncuestas()
