@@ -211,11 +211,6 @@ class AppEncuestas(tk.Tk):
         except Exception as e:
             messagebox.showerror("Error", f"Error al exportar datos: {e}")
 
-    import tkinter as tk
-    from tkinter import ttk, messagebox
-    import matplotlib.pyplot as plt
-    from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-
     def generar_grafico(self):
         try:
             # Get filtered data from the table
