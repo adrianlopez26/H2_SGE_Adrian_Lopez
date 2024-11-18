@@ -13,8 +13,7 @@ Instalación
 
 1. Clonar el repositorio
 
-git clone https://github.com/adrianlopez26/gestion-de-encuestas.git
-cd gestion-de-encuestas
+git clone https://github.com/adrianlopez26/H2_SGE_Adrian_Lopez.git
 
 2. Instalar dependencias
 
@@ -46,7 +45,7 @@ mysql -u root -p
 
 2. Crea una base de datos para el proyecto:
 
-CREATE DATABASE gestion_encuestas;
+CREATE DATABASE encuestas;
 
 3. Usa la base de datos creada:
 
@@ -64,7 +63,7 @@ Edita el archivo `config.py` para incluir tus credenciales de MySQL:
 MYSQL_HOST = 'localhost'
 MYSQL_USER = 'tu_usuario'
 MYSQL_PASSWORD = 'tu_contraseña'
-MYSQL_DB = 'gestion_encuestas'
+MYSQL_DB = 'encuestas'
 
 Ejecución
 
@@ -93,5 +92,5 @@ Notas
 
 - Asegúrate de que el servidor MySQL esté en ejecución antes de iniciar la aplicación.
 - Si encuentras algún problema, revisa los mensajes de error en la consola para obtener más detalles.
+- Asegurarse de que todas los requisitos y los packages.
 
-¡Disfruta usando la aplicación de gestión de encuestas!
