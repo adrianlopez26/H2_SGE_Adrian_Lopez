@@ -13,14 +13,14 @@ class AppEncuestas(tk.Tk):
         self.geometry("1600x900")
         self.configure(bg="lightblue")
 
-        # Apply styles
+        # Aplicar estilos
         CustomButton = apply_styles(self)
 
-        # Create a main frame to center the content
+        # Crear un marco principal para centrar el contenido
         main_frame = ttk.Frame(self, style="TFrame")
         main_frame.pack(expand=True, fill=tk.BOTH)
 
-        # Center the main frame
+        # Centrar el marco principal
         main_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 
         # Campos de entrada para la encuesta
@@ -36,7 +36,7 @@ class AppEncuestas(tk.Tk):
         CustomButton(button_frame, text="Exportar a Excel", command=self.exportar_a_excel).grid(row=0, column=4, padx=5)
         CustomButton(button_frame, text="Generar Gráfico", command=self.generar_grafico).grid(row=0, column=5, padx=5)
 
-        # Frame for the table
+        # Marco para la tabla
         frame = ttk.Frame(main_frame)
         frame.grid(row=13, column=0, columnspan=2, sticky='nsew', padx=20)
 
@@ -46,7 +46,7 @@ class AppEncuestas(tk.Tk):
             "bebidas_destiladas_semana", "vinos_semana", "perdidas_control", "diversion_dependencia_alcohol",
             "problemas_digestivos", "tension_alta", "dolor_cabeza"), show="headings")
 
-        # Set column headings and widths
+        # Establecer encabezados y anchos de columna
         column_widths = {
             "idEncuesta": 50, "edad": 50, "sexo": 80, "bebidas_semana": 100, "cervezas_semana": 100,
             "bebidas_fin_semana": 100, "bebidas_destiladas_semana": 120, "vinos_semana": 100,
@@ -60,10 +60,10 @@ class AppEncuestas(tk.Tk):
 
         self.tree.grid(row=0, column=0, sticky='nsew')
 
-        # Bind the select event
+        # Vincular el evento de selección
         self.tree.bind("<<TreeviewSelect>>", self.on_tree_select)
 
-        # Fetch and display data on startup
+        # Obtener y mostrar datos al iniciar
         self.ver_encuestas()
 
     def create_input_fields(self, parent):
@@ -109,16 +109,18 @@ class AppEncuestas(tk.Tk):
         clear_filter_button.grid(row=3, column=0, columnspan=2, pady=5)
 
     def clear_filters(self):
+        # Limpiar los filtros
         self.age_filter.delete(0, tk.END)
         self.sex_filter.set("")
         self.ver_encuestas()
 
     def on_tree_select(self, event):
+        # Manejar la selección de un elemento en la tabla
         selected_items = self.tree.selection()
         if selected_items:
             selected_item = selected_items[0]
             values = self.tree.item(selected_item, 'values')
-            for entry, value in zip(self.entries, values[1:]):  # Skip idEncuesta
+            for entry, value in zip(self.entries, values[1:]):  # Omitir idEncuesta
                 if isinstance(entry, ttk.Combobox):
                     entry.set(value)
                 else:
@@ -127,33 +129,34 @@ class AppEncuestas(tk.Tk):
 
     def agregar_encuesta(self):
         try:
+            # Obtener datos de los campos de entrada
             data = [entry.get() for entry in self.entries]
             agregar_encuesta(*data)
             messagebox.showinfo("Éxito", "Encuesta añadida correctamente.")
-            self.ver_encuestas()  # Refresh the table
+            self.ver_encuestas()  # Actualizar la tabla
         except Exception as e:
             messagebox.showerror("Error", f"Error al agregar encuesta: {e}")
 
     def ver_encuestas(self):
         try:
-            # Get filter values
+            # Obtener valores de los filtros
             age_filter = self.age_filter.get()
             sex_filter = self.sex_filter.get()
 
-            # Fetch all rows
+            # Obtener todas las filas
             rows = obtener_encuestas()
 
-            # Apply filters
+            # Aplicar filtros
             if age_filter:
-                rows = [row for row in rows if str(row[1]) == age_filter]  # Assuming age is the second column
+                rows = [row for row in rows if str(row[1]) == age_filter]  # Suponiendo que la edad es la segunda columna
             if sex_filter:
-                rows = [row for row in rows if row[2] == sex_filter]  # Assuming sex is the third column
+                rows = [row for row in rows if row[2] == sex_filter]  # Suponiendo que el sexo es la tercera columna
 
-            # Clear the table
+            # Limpiar la tabla
             for row in self.tree.get_children():
                 self.tree.delete(row)
 
-            # Insert filtered rows
+            # Insertar filas filtradas
             for row in rows:
                 self.tree.insert("", "end", values=row)
         except Exception as e:
@@ -161,22 +164,24 @@ class AppEncuestas(tk.Tk):
 
     def actualizar_encuesta(self):
         try:
+            # Obtener el elemento seleccionado
             selected_item = self.tree.selection()[0]
             data = [entry.get() for entry in self.entries]
-            data.append(self.tree.item(selected_item)['values'][0])  # Add idEncuesta to the data
+            data.append(self.tree.item(selected_item)['values'][0])  # Añadir idEncuesta a los datos
             actualizar_encuesta(*data)
             messagebox.showinfo("Éxito", "Encuesta actualizada correctamente.")
-            self.ver_encuestas()  # Refresh the table
+            self.ver_encuestas()  # Actualizar la tabla
         except Exception as e:
             messagebox.showerror("Error", f"Error al actualizar encuesta: {e}")
 
     def eliminar_encuesta(self):
         try:
+            # Obtener el elemento seleccionado
             selected_item = self.tree.selection()[0]
             values = self.tree.item(selected_item)['values']
             id_encuesta = values[0]
 
-            # Ask for confirmation
+            # Pedir confirmación
             confirm = messagebox.askyesno("Confirmar eliminación",
                                             f"¿Está seguro de que desea eliminar la encuesta con ID {id_encuesta}?")
 
@@ -184,9 +189,9 @@ class AppEncuestas(tk.Tk):
                 eliminar_encuesta(id_encuesta)
                 self.tree.delete(selected_item)
                 messagebox.showinfo("Éxito", "Encuesta eliminada correctamente.")
-                self.ver_encuestas()  # Refresh the table
+                self.ver_encuestas()  # Actualizar la tabla
 
-                # Show deleted survey details in a new window
+                # Mostrar detalles de la encuesta eliminada en una nueva ventana
                 details_window = tk.Toplevel(self)
                 details_window.title("Detalles de la Encuesta Eliminada")
                 details_window.geometry("400x300")
@@ -199,40 +204,40 @@ class AppEncuestas(tk.Tk):
 
     def exportar_a_excel(self):
         try:
-            # Get data from the table
+            # Obtener datos de la tabla
             data = [self.tree.item(item)['values'] for item in self.tree.get_children()]
 
             if not data:
                 messagebox.showinfo("Información", "No hay datos para exportar.")
                 return
 
-            # Call the export function
+            # Llamar a la función de exportación
             exportar_a_excel(data)
         except Exception as e:
             messagebox.showerror("Error", f"Error al exportar datos: {e}")
 
     def generar_grafico(self):
         try:
-            # Get filtered data from the table
+            # Obtener datos filtrados de la tabla
             data = [self.tree.item(item)['values'] for item in self.tree.get_children()]
 
             if not data:
                 messagebox.showinfo("Información", "No hay datos para generar el gráfico.")
                 return
 
-            # Extract relevant columns for the graph
-            edades = [row[1] for row in data]  # Assuming age is the second column
-            sexos = [row[2] for row in data]  # Assuming sex is the third column
+            # Extraer columnas relevantes para el gráfico
+            edades = [row[1] for row in data]  # Suponiendo que la edad es la segunda columna
+            sexos = [row[2] for row in data]  # Suponiendo que el sexo es la tercera columna
 
-            # Create a new window
+            # Crear una nueva ventana
             new_window = tk.Toplevel(self)
             new_window.title("Gráfico de Encuestas")
             new_window.geometry("800x600")
 
-            # Create a figure and axis
+            # Crear una figura y un eje
             fig, ax = plt.subplots()
 
-            # Plot data
+            # Graficar datos
             hombres = [edad for edad, sexo in zip(edades, sexos) if sexo == 'Hombre']
             mujeres = [edad for edad, sexo in zip(edades, sexos) if sexo == 'Mujer']
 
@@ -247,7 +252,7 @@ class AppEncuestas(tk.Tk):
                 messagebox.showinfo("Información", "No hay datos suficientes para generar el gráfico.")
                 return
 
-            # Embed the plot in the new window
+            # Incrustar el gráfico en la nueva ventana
             canvas = FigureCanvasTkAgg(fig, master=new_window)
             canvas.draw()
             canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
